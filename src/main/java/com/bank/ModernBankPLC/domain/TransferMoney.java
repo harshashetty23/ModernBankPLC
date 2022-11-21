@@ -15,12 +15,13 @@ public class TransferMoney {
     @Getter
     private final Money money;
 
-    public TransferMoney(
-            Account.AccountId sourceAccountId,
-            Account.AccountId targetAccountId,
-            Money money) {
+    @Getter
+    private final Account.Currency currency;
+
+    public TransferMoney(Account.AccountId sourceAccountId, Account.AccountId targetAccountId, Money money, Account.Currency currency) {
         this.sourceAccountId = sourceAccountId;
         this.targetAccountId = targetAccountId;
         this.money = money;
+        this.currency = currency;
     }
 }

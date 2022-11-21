@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 
 import javax.validation.ConstraintViolationException;
 
+import static com.bank.ModernBankPLC.domain.Account.Currency.EUR;
+import static com.bank.ModernBankPLC.domain.Account.Currency.GBP;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -24,7 +26,7 @@ public class TransferControllerTest {
     @Test
     void testSendMoneyServiceOk(){
 
-        final ResponseEntity<Void> voidResponseEntity = transferController.transferFund(10L, 11L, 20.0);
+        final ResponseEntity<Void> voidResponseEntity = transferController.transferFund(10L, 11L, 20.0,GBP.name());
 
         assertEquals(HttpStatus.OK, voidResponseEntity.getStatusCode());
         assertEquals(200, voidResponseEntity.getStatusCode().value());
@@ -36,7 +38,7 @@ public class TransferControllerTest {
     void testTransferFundWithSourceAccountIdNull(){
 
         try {
-            final ResponseEntity<Void> voidResponseEntity = transferController.transferFund(null, 11L, 20.0);
+            final ResponseEntity<Void> voidResponseEntity = transferController.transferFund(null, 11L, 20.0, EUR.name());
             fail();
         }
         catch (Exception e) {

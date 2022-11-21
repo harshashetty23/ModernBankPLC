@@ -6,6 +6,7 @@ import com.bank.ModernBankPLC.domain.TransferMoney;
 import com.bank.ModernBankPLC.entity.AccountJpaEntity;
 import com.bank.ModernBankPLC.entity.ActivityJpaEntity;
 import com.bank.ModernBankPLC.exception.InsufficientFundException;
+import com.bank.ModernBankPLC.exception.InvalidFundTransferOperation;
 import com.bank.ModernBankPLC.repository.AccountRepository;
 import com.bank.ModernBankPLC.repository.ActivityRepository;
 import com.bank.ModernBankPLC.service.TransferFundService;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+import static com.bank.ModernBankPLC.domain.Account.Currency.EUR;
 import static com.bank.ModernBankPLC.domain.Account.Currency.GBP;
 import static com.bank.ModernBankPLC.entity.ActivityJpaEntity.TransferType.CREDIT;
 import static com.bank.ModernBankPLC.entity.ActivityJpaEntity.TransferType.DEBIT;
@@ -56,7 +58,7 @@ public class TransferFundServiceTest {
         accountRepository.save(getMockAccountJpaEntity(sourceAccountId));
         accountRepository.save(getMockAccountJpaEntity(targetAccountId));
 
-        TransferMoney command = new TransferMoney(new Account.AccountId(sourceAccountId), new Account.AccountId(targetAccountId), Money.of(2.1));
+        TransferMoney command = new TransferMoney(new Account.AccountId(sourceAccountId), new Account.AccountId(targetAccountId), Money.of(2.1),GBP);
 
         //when
         transferFundService.transferFund(command);
@@ -87,8 +89,6 @@ public class TransferFundServiceTest {
         assertEquals(sourceAccountId, allBytargetAccountId.get(0).getSourceAccountId());
         assertEquals(targetAccountId, allBytargetAccountId.get(0).getTargetAccountId());
         assertNotNull(allBytargetAccountId.get(0).getCorrelationId());
-        assertNotNull(allBytargetAccountId.get(0).toString());
-        assertNotNull(allBytargetAccountId.get(0).hashCode());
         assertTrue(allBytargetAccountId.get(0).equals(allBytargetAccountId.get(0)));
         assertEquals(GBP, allBytargetAccountId.get(0).getCurrency());
         assertEquals(DEBIT, allBytargetAccountId.get(0).getTransferType());
@@ -104,7 +104,7 @@ public class TransferFundServiceTest {
         accountRepository.save(getMockAccountJpaEntity(sourceAccountId));
         accountRepository.save(getMockAccountJpaEntity(targetAccountId));
 
-        TransferMoney command = new TransferMoney(new Account.AccountId(sourceAccountId), new Account.AccountId(targetAccountId), Money.of(112.1));
+        TransferMoney command = new TransferMoney(new Account.AccountId(sourceAccountId), new Account.AccountId(targetAccountId), Money.of(112.1),GBP);
 
         //when
         try {
@@ -118,6 +118,28 @@ public class TransferFundServiceTest {
 
         assertNotNull(command.hashCode());
         assertNotNull(command.toString());
+    }
+
+    @Test
+    void testFundTransferBetweenAccountAnsShouldThrowExceptionForInvalidCurrencyUsed() {
+
+        //Given
+        Long sourceAccountId = 1l;
+        Long targetAccountId = 2l;
+        accountRepository.save(getMockAccountJpaEntity(sourceAccountId));
+        accountRepository.save(getMockAccountJpaEntity(targetAccountId));
+
+        TransferMoney command = new TransferMoney(new Account.AccountId(sourceAccountId), new Account.AccountId(targetAccountId), Money.of(2.1),EUR);
+
+        //when
+        try {
+            transferFundService.transferFund(command);
+            fail();
+        } catch (Exception e) {
+
+            assertTrue(e instanceof InvalidFundTransferOperation);
+            assertTrue(e.getMessage().contains("Source account Currency"));
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 package com.bank.ModernBankPLC.controller;
 
 import com.bank.ModernBankPLC.exception.InsufficientFundException;
+import com.bank.ModernBankPLC.exception.InvalidFundTransferOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,5 +25,10 @@ public class AppExceptionHandler {
     @ExceptionHandler
     protected ResponseEntity<Object> handle(InsufficientFundException ex) {
         return ResponseEntity.badRequest().body("InSuffecient Fund -->" + ex.getMessage());
+    }
+
+    @ExceptionHandler
+    protected ResponseEntity<Object> handle(InvalidFundTransferOperation ex) {
+        return ResponseEntity.badRequest().body("Invalid Transfer Fund Operation -->" + ex.getMessage());
     }
 }

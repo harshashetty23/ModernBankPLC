@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Account {
 
-    public enum Currency {GBP}
+    public enum Currency {GBP,EUR,USD}
 
     ;
 

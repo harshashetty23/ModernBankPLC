@@ -58,7 +58,7 @@ public class MiniStatementGenerationTest {
         accountRepository.save(getMockAccountJpaEntity(sourceAccountId));
         accountRepository.save(getMockAccountJpaEntity(targetAccountId));
 
-        TransferMoney command = new TransferMoney(new Account.AccountId(sourceAccountId), new Account.AccountId(targetAccountId), Money.of(2.1));
+        TransferMoney command = new TransferMoney(new Account.AccountId(sourceAccountId), new Account.AccountId(targetAccountId), Money.of(2.1),GBP);
 
 
         transferFundService.transferFund(command);
